@@ -10,7 +10,7 @@
 setMethod("semPlotModel.S4",signature("lavaan"),function(object){
 
   if (class(object)!="lavaan") stop("Input must me a 'lavaan' object")
-
+  
   # Extract parameter estimates:
   pars <- parameterEstimates(object,standardized=TRUE)
   list <- inspect(object,"list")
@@ -37,9 +37,9 @@ setMethod("semPlotModel.S4",signature("lavaan"),function(object){
   if (is.null(pars$label)) pars$label <- rep("",nrow(pars))
   
   semModel <- new("semPlotModel")
-  
+
   if (is.null(pars$group)) pars$group <- ""
-  
+
   # Create edges dataframe
   semModel@Pars <- data.frame(
     label = pars$label,
@@ -49,9 +49,10 @@ setMethod("semPlotModel.S4",signature("lavaan"),function(object){
     est = pars$est,
     std = pars$std.all,
     group = pars$group,
-    fixed = list$free==0,
-    par = list$free,
+    fixed = list$free[list$op!="=="]==0,
+    par = list$free[list$op!="=="],
     stringsAsFactors=FALSE)
+
 
   semModel@Pars$edge[pars$op=="~~"] <- "<->"  
   semModel@Pars$edge[pars$op=="~*~"] <- "<->"  
@@ -76,14 +77,15 @@ setMethod("semPlotModel.S4",signature("lavaan"),function(object){
     stringsAsFactors=FALSE)
     
   semModel@ObsCovs <- object@SampleStats@cov
-  names(semModel@ObsCovs) <- object@Data@group.label
+  names(semModel@ObsCovs) <- object@Data@ov.names
   for (i in 1:length(semModel@ObsCovs))
   {
     rownames(semModel@ObsCovs[[i]]) <- colnames(semModel@ObsCovs[[i]]) <- object@Data@ov.names[[i]]
   }
   
   semModel@ImpCovs <- object@Fit@Sigma.hat
-  names(semModel@ImpCovs) <- object@Data@group.label
+  names(semModel@ImpCovs) <- object@Data@ov.names
+  browser()
   for (i in 1:length(semModel@ImpCovs))
   {
     rownames(semModel@ImpCovs[[i]]) <- colnames(semModel@ImpCovs[[i]]) <- object@Data@ov.names[[i]]
