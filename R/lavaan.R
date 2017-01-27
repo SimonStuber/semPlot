@@ -85,7 +85,7 @@ setMethod("semPlotModel.S4",signature("lavaan"),function(object){
   
   semModel@ImpCovs <- object@Fit@Sigma.hat
   names(semModel@ImpCovs) <- object@Data@ov.names
-  browser()
+
   for (i in 1:length(semModel@ImpCovs))
   {
     rownames(semModel@ImpCovs[[i]]) <- colnames(semModel@ImpCovs[[i]]) <- object@Data@ov.names[[i]]
